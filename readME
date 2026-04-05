@@ -1,0 +1,30 @@
+
+
+Step 1: Clone yung repository
+
+Sa bagong laptop:
+
+git clone https://github.com/username/attendance-system.git
+cd attendance-system
+Step 2: Install dependencies
+
+Node.js ito:
+
+npm install
+
+
+Step 3: Setup .env
+
+Kailangan gumawa ng bagong .env sa bagong laptop, same format sa original, example:
+
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=password
+API_KEY=abc123
+Note: .env hindi naka-push sa GitHub kaya kailangan gawin mo manually sa bawat laptop.
+Step 4: Run project
+
+Depende sa project type:
+
+Node.js:
+npm start
