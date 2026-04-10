@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Dash from "../Pages/Dash";
-import Attendance from "../Pages/Attendance";
+import AttendanceDashboard from "../Pages/AttendanceDashboard";
 import StudentDirectory from "../Pages/Students";
 import SecurityLog from "../Pages/SecurityLogs";
 import Report from "../Pages/Reports";
 import Settings from "../Pages/Settings";
+import AttendanceTracker from "../Components/AttendanceTracker";
 const MENU_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: "🏠" },
   { id: "attendance", label: "Attendance", icon: "⏰" },
@@ -18,8 +19,19 @@ const MENU_ITEMS = [
 function Dashboard({ children }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [notifation, setNotification] = useState([]);
+  const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
+  const addNotification = (name) => {
+    setNotification((prev) => [
+      {
+        id: Date.now(),
+        message: `${name} marked present`,
+      },
+      ...prev,
+    ]);
+  };
   const handleLogout = () => {
     console.log("Logging out...");
     localStorage.removeItem("token");
@@ -45,7 +57,7 @@ function Dashboard({ children }) {
       case "dashboard":
         return <Dash />;
       case "attendance":
-        return <Attendance />;
+        return <AttendanceDashboard />;
       case "students":
         return <StudentDirectory />;
       case "security":
@@ -107,7 +119,19 @@ function Dashboard({ children }) {
           onClick={handleLogout}
           className="mt-auto w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 font-medium"
         >
-          🔓 Logout
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="size-6"
+          >
+            <path
+              fillRule="evenodd"
+              d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Logout
         </button>
       </aside>
 
@@ -130,13 +154,39 @@ function Dashboard({ children }) {
           {/* RIGHT */}
           <div className="flex items-center gap-4">
             {/* NOTIFICATION */}
-            <button className="relative">
-              🔔
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 rounded-full">
-                3
-              </span>
-            </button>
+            <div className="relative">
+              <button onClick={() => setShow(!show)} className="relative">
+                🔔
+                {notifation.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 rounded-full">
+                    {notifation.length}
+                  </span>
+                )}
+              </button>
 
+              {show && (
+                <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-3 z-50">
+                  {notifation.length === 0 ? (
+                    <p className="text-sm text-gray-500">No notifications</p>
+                  ) : (
+                    notifation.map((notif) => (
+                      <div
+                        key={notif.id}
+                        className="text-sm border-b py-1 text-black"
+                      >
+                        {notif.message}
+                      </div>
+                    ))
+                  )}
+                  <button
+                    className="text-white border rounded-full px-2 py-1 bg-black mt-2"
+                    onClick={() => setShow(false)}
+                  >
+                    close
+                  </button>
+                </div>
+              )}
+            </div>
             {/* PROFILE */}
             <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
               {initials}
@@ -146,7 +196,13 @@ function Dashboard({ children }) {
 
         {/* Page Content */}
         <div className="flex-1 p-6 overflow-auto">
-          {children || <div className="text-gray-600">{renderContent()}</div>}
+          {/* hidden but running */}
+          <div className="hidden">
+            <AttendanceTracker onPresent={addNotification} />
+          </div>
+
+          {/* visible content */}
+          <div className="text-gray-600">{renderContent()}</div>
         </div>
       </main>
     </div>

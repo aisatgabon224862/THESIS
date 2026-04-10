@@ -10,17 +10,6 @@ import {
   Legend,
 } from "recharts";
 
-// Sample attendance data
-const data = [
-  { name: "Mon", attendance: 2, incidents: 50 },
-  { name: "Tue", attendance: 3, incidents: 5 },
-  { name: "Wed", attendance: 99, incidents: 2 },
-  { name: "Thu", attendance: 96, incidents: 7 },
-  { name: "Fri", attendance: 95, incidents: 4 },
-  { name: "Sat", attendance: 0, incidents: 1 },
-  { name: "Sun", attendance: 0, incidents: 0 },
-];
-
 const Charts = () => {
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef(null);
@@ -30,7 +19,7 @@ const Charts = () => {
       .then((res) => res.json)
       .catch((err) => console.log(err));
   }, []);
-  // Wait until DOM is ready and container has a size
+
   useEffect(() => {
     if (containerRef.current) setMounted(true);
   }, []);
@@ -46,7 +35,6 @@ const Charts = () => {
             {/* Grid */}
             <CartesianGrid stroke="#f1f5f9" vertical={false} />
 
-            {/* X Axis */}
             <XAxis
               dataKey="name"
               axisLine={false}

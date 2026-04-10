@@ -187,11 +187,29 @@ const getAttendance = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getAllAttendance = async (req, res) => {
+  try {
+    const records = await attendance.find().populate("student");
 
-// EXPORT =================
+    const result = records.map((r) => ({
+      _id: r._id,
+      name: r.student?.name,
+      yearLevel: r.student?.yearLevel,
+      Status: r.Status,
+      time: r.time,
+      date: r.date,
+    }));
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export {
   initializeStudents,
   barcodeScanner,
   getAttendance,
   getWeeklyAttendance,
+  getAllAttendance,
 };

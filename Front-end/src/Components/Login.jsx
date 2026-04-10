@@ -6,6 +6,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
 
   const navigate = useNavigate();
 
@@ -55,10 +56,8 @@ const Login = () => {
     <div className="min-h-screen flex">
       <div className="hidden md:flex w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-10 flex-col justify-between">
         <div>
-          <h1 className="text-4xl font-bold leading-tight">
-            AISAT SecureCheck
-          </h1>
-          <p className="mt-4 text-blue-100">
+          <h1 className="text-4xl font-bold leading-tight">AISAT SECURITY</h1>
+          <p className="mt-4 text-blue-100 ">
             IMPLEMENTING AN AUTOMATED CHECK-IN AND CHECK-OUT SYSTEM USING FACIAL
             RECOGNITION AND ID RECOGNITION AND METAL DETECTION AT AISAT COLLEGE
             DASMARIÑAS
@@ -81,35 +80,36 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleLogin} className="space-y-5">
-            {/* EMAIL */}
-            <div>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3  rounded-xl border border-gray-300 !bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="relative">
               <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition"
-              />
-            </div>
-
-            {/* PASSWORD */}
-            <div>
-              <input
-                type="password"
+                type={show ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                className="w-full px-4 py-3 pr-16 rounded-xl border border-gray-300 !bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
 
+              <button
+                type="button"
+                onClick={() => setShow(!show)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-600"
+              >
+                {show ? "Hide" : "Show"}
+              </button>
+            </div>
             {/* ERROR */}
             {error && (
               <p className="text-red-500 text-sm bg-red-100 p-2 rounded-lg">
                 {error}
               </p>
             )}
-
             {/* OPTIONS */}
             <div className="flex justify-between text-sm">
               <label className="flex items-center gap-2 text-gray-600">
@@ -117,7 +117,6 @@ const Login = () => {
                 Remember me
               </label>
             </div>
-
             {/* BUTTON */}
             <button
               type="submit"

@@ -20,13 +20,13 @@ const Dashboard = () => {
   const [filter, setFilter] = useState("week");
   const [loading, setLoading] = useState(true);
 
-  // ================= CLOCK =================
+  //  CLOCK
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // ================= FETCH =================
+  //  FETCH
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,7 +57,7 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // ================= HELPERS =================
+  //  HELPERS
   const normalizeDate = (date) => {
     const d = new Date(date);
     if (isNaN(d.getTime())) return null;
@@ -67,7 +67,7 @@ const Dashboard = () => {
 
   const getStatus = (status) => status?.toLowerCase().trim();
 
-  // ================= WEEKLY =================
+  //  WEEKLY
   const weeklyData = useMemo(() => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const data = days.map((d) => ({ name: d, attendance: 0, incidents: 0 }));
@@ -97,7 +97,7 @@ const Dashboard = () => {
     return data;
   }, [attendance]);
 
-  // ================= MONTHLY =================
+  //  MONTHLY
   const monthlyData = useMemo(() => {
     const now = new Date();
     const daysInMonth = new Date(
@@ -133,7 +133,7 @@ const Dashboard = () => {
 
   const chartData = filter === "month" ? monthlyData : weeklyData;
 
-  // ================= TODAY =================
+  //  TODAY
   const today = normalizeDate(new Date());
 
   const todayRecords = attendance.filter((a) => {
@@ -150,7 +150,6 @@ const Dashboard = () => {
       ? 0
       : ((presentToday / students.length) * 100).toFixed(1);
 
-  // ================= UI =================
   return (
     <SkeletonTheme baseColor="#f3f4f6" highlightColor="#e5e7eb">
       <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
@@ -256,7 +255,7 @@ const Dashboard = () => {
   );
 };
 
-// ================= CARD =================
+//  CARD
 const ModernCard = ({ title, value, statusColor, loading }) => {
   const textColor =
     statusColor === "green"
