@@ -2,6 +2,7 @@ import React from "react";
 import Login from "./Components/Login";
 import Dashboard from "./Components/Dashboard";
 import ProtectedRoutes from "./Components/ProtectedRoutes";
+import FaceScanner from "./Security/FaceScan";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
               </ProtectedRoutes>
             }
           ></Route>
+          <Route path="/face-scan" element={<FaceScanner />} />
         </Routes>
       </div>
     </>

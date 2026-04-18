@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Dash from "../Pages/Dash";
 import AttendanceDashboard from "../Pages/AttendanceDashboard";
@@ -6,6 +6,7 @@ import StudentDirectory from "../Pages/Students";
 import SecurityLog from "../Pages/SecurityLogs";
 import Report from "../Pages/Reports";
 import Settings from "../Pages/Settings";
+import AttendanceScanner from "../Pages/AttendanceScanner";
 import AttendanceTracker from "../Components/AttendanceTracker";
 const MENU_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: "🏠" },
@@ -14,6 +15,7 @@ const MENU_ITEMS = [
   { id: "security", label: "Security Log", icon: "🛡️" },
   { id: "reports", label: "Reports", icon: "📄" },
   { id: "settings", label: "Settings", icon: "⚙️" },
+  { id: "scanners", label: "Scanner", icon: "🕵🏻" },
 ];
 
 function Dashboard({ children }) {
@@ -21,16 +23,24 @@ function Dashboard({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notifation, setNotification] = useState([]);
   const [show, setShow] = useState(false);
+  const [inital, setInitial] = useState(false);
   const navigate = useNavigate();
 
   const addNotification = (name) => {
-    setNotification((prev) => [
-      {
-        id: Date.now(),
-        message: `${name} marked present`,
-      },
-      ...prev,
-    ]);
+    setNotification((prev) => {
+      const updated = [
+        {
+          id: Date.now(),
+          message: `${name} marked present`,
+        },
+        ...prev,
+      ];
+
+      return updated.slice(0, 10);
+    });
+  };
+  const handleInitial = () => {
+    setInitial(!inital);
   };
   const handleLogout = () => {
     console.log("Logging out...");
@@ -66,6 +76,8 @@ function Dashboard({ children }) {
         return <Report />;
       case "settings":
         return <Settings />;
+      case "scanners":
+        return <AttendanceScanner />;
     }
   };
 
@@ -136,7 +148,7 @@ function Dashboard({ children }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 md:ml-64">
+      <main className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <header className="bg-white dark:bg-gray-900 border-b px-6 py-4 flex justify-between items-center sticky top-0 z-10">
           {/* LEFT */}
@@ -172,7 +184,7 @@ function Dashboard({ children }) {
                     notifation.map((notif) => (
                       <div
                         key={notif.id}
-                        className="text-sm border-b py-1 text-black"
+                        className="text-xl border-b py-1 text-black "
                       >
                         {notif.message}
                       </div>
@@ -188,9 +200,9 @@ function Dashboard({ children }) {
               )}
             </div>
             {/* PROFILE */}
-            <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+            <button className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
               {initials}
-            </div>
+            </button>
           </div>
         </header>
 

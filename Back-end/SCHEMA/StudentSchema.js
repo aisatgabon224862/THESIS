@@ -9,6 +9,10 @@ const StudentDesign = new mongoose.Schema(
     studentID: { type: String, required: true, unique: true },
     yearLevel: { type: String, required: true },
     Status: { type: String, default: "Active", enum: ["Active", "Not Active"] },
+    faceDescriptor: {
+      type: [Number],
+      default: [],
+    },
   },
   { timestamps: true },
 );

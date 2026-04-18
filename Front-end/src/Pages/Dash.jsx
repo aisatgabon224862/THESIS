@@ -34,7 +34,7 @@ const Dashboard = () => {
 
         const [studentsRes, attendanceRes] = await Promise.all([
           fetch("http://localhost:3000/api/students/view"),
-          fetch("http://localhost:3000/attendance/api/view"),
+          fetch("http://localhost:3000/attendance/api/all"),
         ]);
 
         if (!studentsRes.ok || !attendanceRes.ok)
@@ -55,6 +55,9 @@ const Dashboard = () => {
     };
 
     fetchData();
+    const interval = setInterval(fetchData, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   //  HELPERS
@@ -219,7 +222,7 @@ const Dashboard = () => {
         <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-semibold text-gray-800 text-lg">
-              Attendance Trends
+              Quick OverView
             </h2>
 
             <select

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ScannerTest from "./Scanner";
+import ScannerTest from "../Security/Scanner.jsx";
 
 const Reports = () => {
   const [selectedDates, setSelectedDates] = useState({});
