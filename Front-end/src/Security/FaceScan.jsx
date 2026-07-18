@@ -53,7 +53,14 @@ export default function FaceScanner() {
 
   const startVideo = () => {
     navigator.mediaDevices
-      .getUserMedia({ video: true })
+      .getUserMedia({
+        video: {
+          deviceId: {
+            exact:
+              "76b1a15d5d315d64e1a901614f54913d6a5ef9907476c201dbde601e6b12c5f1",
+          },
+        },
+      })
       .then((stream) => {
         videoRef.current.srcObject = stream;
       })
@@ -62,6 +69,10 @@ export default function FaceScanner() {
 
   //  LOAD STUDENT FACES FROM BACKEND
 
+  navigator.mediaDevices.enumerateDevices().then((devices) => {
+    const videoDevices = devices.filter((d) => d.kind === "videoinput");
+    console.log(videoDevices);
+  });
   const loadLabeledFaces = async () => {
     const res = await fetch("http://localhost:3000/api/students/view");
     const data = await res.json();
@@ -124,7 +135,7 @@ export default function FaceScanner() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // loop each detected face
-      resized.forEach(async (detection) => {
+      for (const detection of resized) {
         // compare face
         const match = faceMatcherRef.current.findBestMatch(
           detection.descriptor,
@@ -141,7 +152,7 @@ export default function FaceScanner() {
         if (match.label !== "unknown") {
           await markAttendance(match.label);
         }
-      });
+      }
     }, 1000);
   };
 
@@ -193,19 +204,21 @@ export default function FaceScanner() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        studentID: selectedStudent, //  palitan later dynamic
+        studentID: selectedStudent,
         descriptor,
       }),
     });
-
+    if (!selectedStudent) return alert("select student first");
     alert("Face enrolled!");
   };
 
   //  UI
 
   return (
-    <div className="flex flex-col items-center p-5">
-      <h1 className="text-xl font-bold mb-4">Attendance Face Scanner</h1>
+    <div className="flex flex-col items-center gap-4">
+      <h2 className="text-lg font-semibold text-gray-700">
+        Attendance Face Scanner
+      </h2>
 
       <div className="relative">
         <video
@@ -215,30 +228,33 @@ export default function FaceScanner() {
           width="600"
           height="450"
           onPlay={handlePlay}
-          className="rounded-lg"
+          className="rounded-lg border"
         />
 
-        {/* canvas overlay */}
         <div ref={canvasRef} className="absolute top-0 left-0" />
       </div>
-      <select
-        value={selectedStudent}
-        onChange={(e) => setSelectedStudent(e.target.value)}
-      >
-        <option value="">Select Student</option>
-        {students.map((s) => (
-          <option key={s.studentID} value={s.studentID}>
-            {s.name} ({s.studentID})
-          </option>
-        ))}
-      </select>
 
-      <button
-        onClick={enrollFace}
-        className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
-      >
-        Enroll Face
-      </button>
+      <div className="flex gap-2 mt-2">
+        <select
+          value={selectedStudent}
+          onChange={(e) => setSelectedStudent(e.target.value)}
+          className="border rounded px-3 py-2"
+        >
+          <option value="">Select Student</option>
+          {students.map((s) => (
+            <option key={s.studentID} value={s.studentID}>
+              {s.name} ({s.studentID})
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={enrollFace}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 rounded"
+        >
+          Enroll Face
+        </button>
+      </div>
     </div>
   );
 }

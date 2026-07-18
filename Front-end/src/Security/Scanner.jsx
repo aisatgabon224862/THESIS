@@ -62,23 +62,25 @@ export default function Scanner() {
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4 text-center">Barcode Scanner</h1>
+    <div className="flex flex-col items-center gap-4">
+      <h2 className="text-lg font-semibold text-gray-700">Barcode Scanner</h2>
 
       <input
         ref={inputRef}
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onFocus={() => console.log("INPUT FOCUSED")}
+        onBlur={() => console.log("INPUT LOST FOCUS")}
+        onChange={(e) => {
+          setInput(e.target.value);
+        }}
         onKeyDown={handleKeyDown}
-        className="border p-3 w-full text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Scan barcode..."
       />
 
-      {loading && <p className="mt-3 text-blue-500 text-center">Scanning...</p>}
+      {loading && <p className="text-blue-500">Scanning...</p>}
 
       {result && (
         <div
-          className={`mt-4 p-4 rounded-lg text-center ${
+          className={`w-full max-w-md p-3 rounded text-center ${
             result.message.includes("recorded")
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"

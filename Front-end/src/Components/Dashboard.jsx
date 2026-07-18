@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Dash from "../Pages/Dash";
 import AttendanceDashboard from "../Pages/AttendanceDashboard";
@@ -8,6 +8,8 @@ import Report from "../Pages/Reports";
 import Settings from "../Pages/Settings";
 import AttendanceScanner from "../Pages/AttendanceScanner";
 import AttendanceTracker from "../Components/AttendanceTracker";
+import bossing from "../assets/bossing.mp3";
+import joel from "../assets/malupiton-aray-ko.mp3";
 const MENU_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: "🏠" },
   { id: "attendance", label: "Attendance", icon: "⏰" },
@@ -24,6 +26,7 @@ function Dashboard({ children }) {
   const [notifation, setNotification] = useState([]);
   const [show, setShow] = useState(false);
   const [inital, setInitial] = useState(false);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   const addNotification = (name) => {
@@ -39,9 +42,63 @@ function Dashboard({ children }) {
       return updated.slice(0, 10);
     });
   };
-  const handleInitial = () => {
-    setInitial(!inital);
+
+  const playSound = (type) => {
+    const audio = new Audio(type === "success" ? bossing : joel);
+    audio.play();
   };
+  useEffect(() => {
+    let barcode = "";
+    let timer;
+
+    const handleScanner = (e) => {
+      if (e.key.length === 1) {
+        barcode += e.key;
+      }
+
+      clearTimeout(timer);
+
+      timer = setTimeout(async () => {
+        if (/^\d+$/.test(barcode) && barcode.length >= 6) {
+          console.log("SCANNED:", barcode);
+
+          try {
+            const res = await fetch(
+              "http://localhost:3000/attendance/api/scan",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  studentID: barcode,
+                }),
+              },
+            );
+
+            const data = await res.json();
+
+            console.log("Attendance:", data);
+            playSound("success");
+            // optional notification
+            if (data.student) {
+              addNotification(data.student);
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
+        barcode = "";
+      }, 100);
+    };
+
+    window.addEventListener("keydown", handleScanner);
+
+    return () => {
+      window.removeEventListener("keydown", handleScanner);
+    };
+  }, []);
   const handleLogout = () => {
     console.log("Logging out...");
     localStorage.removeItem("token");
@@ -125,26 +182,6 @@ function Dashboard({ children }) {
             </button>
           ))}
         </nav>
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="mt-auto w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 font-medium"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6"
-          >
-            <path
-              fillRule="evenodd"
-              d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Logout
-        </button>
       </aside>
 
       {/* Main Content */}
@@ -200,9 +237,42 @@ function Dashboard({ children }) {
               )}
             </div>
             {/* PROFILE */}
-            <button className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
-              {initials}
-            </button>
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // para di magsara agad
+                  setOpen(!open);
+                }}
+                className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold"
+              >
+                {initials}
+              </button>
+
+              {open && (
+                <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md z-50">
+                  {/* Logout */}
+
+                  <button
+                    onClick={handleLogout}
+                    className="mt-auto w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 font-medium"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 

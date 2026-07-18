@@ -6,7 +6,7 @@ const AttendanceScanner = () => {
   return (
     <div>
       <FaceScan />
-      <div>
+      <div className="mt-20">
         <Scanner />
       </div>
     </div>
