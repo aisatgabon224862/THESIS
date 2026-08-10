@@ -64,7 +64,7 @@ function Dashboard({ children }) {
 
           try {
             const res = await fetch(
-              "http://localhost:3000/attendance/api/scan",
+              "https://thesis-back-end.onrender.com/attendance/api/scan",
               {
                 method: "POST",
                 headers: {

@@ -15,7 +15,7 @@ const Charts = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const attendance = fetch("http://localhost:3000/attendance/api/view")
+    const attendance = fetch("https://thesis-back-end.onrender.com/attendance/api/view")
       .then((res) => res.json)
       .catch((err) => console.log(err));
   }, []);

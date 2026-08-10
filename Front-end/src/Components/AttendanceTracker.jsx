@@ -8,7 +8,7 @@ export default function AttendanceTracker({ onPresent }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("http://localhost:3000/attendance/api/view");
+      const res = await fetch("https://thesis-back-end.onrender.com/attendance/api/view");
       const data = await res.json();
       setAttendanceToday(data);
     };

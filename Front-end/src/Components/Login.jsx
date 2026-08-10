@@ -26,7 +26,7 @@ const Login = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/admin/create/authloginuser",
+        "https://thesis-back-end.onrender.com/admin/create/authloginuser",
         {
           method: "POST",
           headers: {

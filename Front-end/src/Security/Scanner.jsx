@@ -28,7 +28,7 @@ export default function Scanner() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/attendance/api/scan", {
+      const res = await fetch("https://thesis-back-end.onrender.com/attendance/api/scan", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

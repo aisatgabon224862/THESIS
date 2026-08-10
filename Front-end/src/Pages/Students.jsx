@@ -21,7 +21,7 @@ export default function StudentDirectory() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const data = await fetch("http://localhost:3000/api/students/view");
+        const data = await fetch("https://thesis-back-end.onrender.com/api/students/view");
         const res = await data.json();
         setStudents(res);
       } catch (error) {
@@ -62,7 +62,7 @@ export default function StudentDirectory() {
     };
     try {
       const res = await fetch(
-        `http://localhost:3000/api/students/update/${id}`,
+        `https://thesis-back-end.onrender.com/api/students/update/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -91,7 +91,7 @@ export default function StudentDirectory() {
       Status: status,
     };
     try {
-      const res = await fetch("http://localhost:3000/api/students/register", {
+      const res = await fetch("https://thesis-back-end.onrender.com/api/students/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newStudent),

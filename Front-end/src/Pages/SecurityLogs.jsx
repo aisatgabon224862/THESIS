@@ -14,7 +14,7 @@ import {
   Legend,
 } from "recharts";
 
-const API = "http://localhost:3000";
+const API = "https://thesis-back-end.onrender.com";
 
 const COLORS = ["#3b82f6", "#ef4444", "#f59e0b", "#10b981"];
 

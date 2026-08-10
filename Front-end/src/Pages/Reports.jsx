@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const API = "http://localhost:3000";
+const API = "https://thesis-back-end.onrender.com";
 
 const Reports = () => {
   const [selectedDate, setSelectedDate] = useState("");

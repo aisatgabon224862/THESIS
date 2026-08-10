@@ -5,7 +5,7 @@ export default function FaceScanner() {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState("");
   useEffect(() => {
-    fetch("http://localhost:3000/api/students/view")
+    fetch("https://thesis-back-end.onrender.com/api/students/view")
       .then((res) => res.json())
       .then(setStudents);
   }, []);
@@ -74,7 +74,7 @@ export default function FaceScanner() {
     console.log(videoDevices);
   });
   const loadLabeledFaces = async () => {
-    const res = await fetch("http://localhost:3000/api/students/view");
+    const res = await fetch("https://thesis-back-end.onrender.com/api/students/view");
     const data = await res.json();
 
     // convert DB data → face-api format
@@ -163,7 +163,7 @@ export default function FaceScanner() {
     if (markedToday.current.has(studentID)) return;
 
     try {
-      const res = await fetch("http://localhost:3000/attendance/api/scan", {
+      const res = await fetch("https://thesis-back-end.onrender.com/attendance/api/scan", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -198,7 +198,7 @@ export default function FaceScanner() {
     // convert Float32Array → normal array (for DB)
     const descriptor = Array.from(detection.descriptor);
 
-    await fetch("http://localhost:3000/api/students/enroll-face", {
+    await fetch("https://thesis-back-end.onrender.com/api/students/enroll-face", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

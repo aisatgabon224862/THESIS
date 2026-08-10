@@ -33,8 +33,8 @@ const Dashboard = () => {
         setLoading(true);
 
         const [studentsRes, attendanceRes] = await Promise.all([
-          fetch("http://localhost:3000/api/students/view"),
-          fetch("http://localhost:3000/attendance/api/all"),
+          fetch("https://thesis-back-end.onrender.com/api/students/view"),
+          fetch("https://thesis-back-end.onrender.com/attendance/api/all"),
         ]);
 
         if (!studentsRes.ok || !attendanceRes.ok)

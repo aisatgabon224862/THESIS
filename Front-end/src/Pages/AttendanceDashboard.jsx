@@ -28,10 +28,10 @@ export default function AttendanceDashboard({ onPresent }) {
         setLoading(true);
 
         const [s, today, all, w] = await Promise.all([
-          fetch("http://localhost:3000/api/students/view"),
-          fetch("http://localhost:3000/attendance/api/view"),
-          fetch("http://localhost:3000/attendance/api/all"),
-          fetch("http://localhost:3000/attendance/api/weekly"),
+          fetch("https://thesis-back-end.onrender.com/api/students/view"),
+          fetch("https://thesis-back-end.onrender.com/attendance/api/view"),
+          fetch("https://thesis-back-end.onrender.com/attendance/api/all"),
+          fetch("https://thesis-back-end.onrender.com/attendance/api/weekly"),
         ]);
 
         setStudents(await s.json());
