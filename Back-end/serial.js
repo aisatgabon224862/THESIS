@@ -3,76 +3,80 @@ import { ReadlineParser } from "@serialport/parser-readline";
 import Detection from "./models/Detection.js";
 import { getStudent } from "./studentSession.js";
 
-const port = new SerialPort({
-  path: "/dev/ttyUSB0",
-
-  baudRate: 115200,
-});
-
-const parser = port.pipe(
-  new ReadlineParser({
-    delimiter: "\n",
-  }),
-);
-
 let metalStatus = "CLEAR";
-
 let previousStatus = "CLEAR";
-
-// para hindi paulit-ulit mag-save
 let lastDetectionTime = 0;
 
 const detectionDelay = 5000;
 
-parser.on("data", async (data) => {
-  const status = data.trim();
+const enableArduino = process.env.ENABLE_ARDUINO === "true";
 
-  if (status !== "METAL" && status !== "CLEAR") {
-    return;
-  }
+if (enableArduino) {
+  const port = new SerialPort({
+    path: process.env.ARDUINO_PORT || "/dev/ttyUSB0",
+    baudRate: 115200,
+  });
 
-  metalStatus = status;
+  const parser = port.pipe(
+    new ReadlineParser({
+      delimiter: "\n",
+    }),
+  );
 
-  console.log("Metal Status:", metalStatus);
+  parser.on("data", async (data) => {
+    const status = data.trim();
 
-  // SAVE ONLY ONCE PAG BAGONG DETECTION
+    if (status !== "METAL" && status !== "CLEAR") {
+      return;
+    }
 
-  if (status === "METAL" && previousStatus !== "METAL") {
-    const now = Date.now();
+    metalStatus = status;
 
-    if (now - lastDetectionTime > detectionDelay) {
-      try {
-        const student = getStudent();
+    console.log("Metal Status:", metalStatus);
 
-        console.log("METAL CURRENT STUDENT:", student);
+    if (status === "METAL" && previousStatus !== "METAL") {
+      const now = Date.now();
 
-        const detection = await Detection.create({
-          student: student.student || "Unknown",
+      if (now - lastDetectionTime > detectionDelay) {
+        try {
+          const student = getStudent();
 
-          studentID: student.studentID || "",
+          console.log("METAL CURRENT STUDENT:", student);
 
-          item: "Metal Detected",
+          const detection = await Detection.create({
+            student: student?.student || "Unknown",
+            studentID: student?.studentID || "",
+            item: "Metal Detected",
+            location: "Entrance",
+            status: "Detected",
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString(),
+          });
 
-          location: "Entrance",
+          console.log("Detection saved:", detection.student);
 
-          status: "Detected",
-
-          date: new Date().toLocaleDateString(),
-
-          time: new Date().toLocaleTimeString(),
-        });
-
-        console.log("Detection saved:", detection.student);
-
-        lastDetectionTime = now;
-      } catch (error) {
-        console.log("Detection save error:", error.message);
+          lastDetectionTime = now;
+        } catch (error) {
+          console.log("Detection save error:", error.message);
+        }
       }
     }
-  }
 
-  previousStatus = status;
-});
+    previousStatus = status;
+  });
+
+  port.on("open", () => {
+    console.log(
+      `Arduino connected on ${process.env.ARDUINO_PORT || "/dev/ttyUSB0"}`,
+    );
+  });
+
+  port.on("error", (error) => {
+    console.error("Arduino serial error:", error.message);
+  });
+} else {
+  console.log("Arduino disabled. Running without hardware.");
+}
 
 export function getMetalStatus() {
   return metalStatus;
